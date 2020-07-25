@@ -1,0 +1,6 @@
+#intellj
+.idea
+MCScreenshare.iml
+
+#maven
+target

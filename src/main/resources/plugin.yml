@@ -1,0 +1,14 @@
+name: MCScreenshare
+version: ${project.version}
+main: mc.screenshare.Main
+api-version: 1.13
+authors: [MorganAnkan]
+description: share your screen in minecraft
+commands:
+  test:
+    usage: /test
+    aliases: ["tst", "example"]
+    description: a test command ;3
+  draw:
+    usage: /draw
+    description: just testing...
