@@ -8,3 +8,7 @@ commands:
   draw:
     usage: /draw
     description: Start the screenshare
+    permission: mcscreenshare.draw
+    aliases:
+      - screenshare
+      - start
