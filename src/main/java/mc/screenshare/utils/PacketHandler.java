@@ -1,5 +1,6 @@
 package mc.screenshare.utils;
 
+import mc.screenshare.Main;
 import mc.screenshare.commands.DrawCommand;
 
 import java.awt.*;
@@ -9,8 +10,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class PacketHandler {
-    public static int port = 4444;
-
+    public static int port = Main.getConfigFile().getInt("port");
     public static void safeStart() {
         try {
             start();

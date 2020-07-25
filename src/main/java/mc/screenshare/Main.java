@@ -2,10 +2,12 @@ package mc.screenshare;
 
 import mc.screenshare.commands.DrawCommand;
 import mc.screenshare.commands.TestCommand;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.configuration.Configuration;
 
 public final class Main extends JavaPlugin {
-
     @Override
     public void onEnable() {
         System.out.println("[MCScreenshare] Initialized");
@@ -19,6 +21,11 @@ public final class Main extends JavaPlugin {
 
         this.getCommand("test").setExecutor(new TestCommand());
         this.getCommand("draw").setExecutor(new DrawCommand());
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
+    }
+    public static Configuration getConfigFile() {
+        return Bukkit.getPluginManager().getPlugin("MCScreenshare").getConfig();
     }
 
 
