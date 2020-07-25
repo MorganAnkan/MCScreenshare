@@ -2,7 +2,7 @@ name: MCScreenshare
 version: ${project.version}
 main: mc.screenshare.Main
 api-version: 1.13
-authors: [MorganAnkan]
+authors: [MorganAnkan, BlueBurgersTDD]
 description: share your screen in minecraft
 commands:
   test:
