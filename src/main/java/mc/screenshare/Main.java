@@ -1,9 +1,7 @@
 package mc.screenshare;
 
 import mc.screenshare.commands.DrawCommand;
-import mc.screenshare.events.CreatureSpawn;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.Configuration;
@@ -20,7 +18,6 @@ public final class Main extends JavaPlugin {
         pm.registerEvents(new PreLogin(), this);
         pm.registerEvents(new ServerPing(), this);*/
         PluginManager pm = Bukkit.getServer().getPluginManager();
-        pm.registerEvents(new CreatureSpawn(), this);
         this.getCommand("draw").setExecutor(new DrawCommand());
         getConfig().options().copyDefaults();
         saveDefaultConfig();
