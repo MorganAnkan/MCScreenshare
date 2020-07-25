@@ -1,7 +1,6 @@
 package mc.screenshare;
 
 import mc.screenshare.commands.DrawCommand;
-import mc.screenshare.commands.TestCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,7 +18,6 @@ public final class Main extends JavaPlugin {
         pm.registerEvents(new PreLogin(), this);
         pm.registerEvents(new ServerPing(), this);*/
 
-        this.getCommand("test").setExecutor(new TestCommand());
         this.getCommand("draw").setExecutor(new DrawCommand());
         getConfig().options().copyDefaults();
         saveDefaultConfig();
