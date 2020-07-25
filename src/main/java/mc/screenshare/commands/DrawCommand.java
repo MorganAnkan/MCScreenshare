@@ -23,9 +23,9 @@ public class DrawCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof ConsoleCommandSender) {
-            System.out.println("hi console im just gonna start the packet handler server ok?");
+            System.out.println("Starting packet handler");
         } else {
-            sender.sendMessage("Starting socketserver lol ok pls wait btw the pos ur at is the point its gonna start from");
+            sender.sendMessage("Starting socketserver...\nPlease note that your current location will be the start position.");
             Player player = (Player) sender;
             playerLoc = player.getLocation();
             currentWorld = player.getWorld();
