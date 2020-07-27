@@ -79,8 +79,7 @@ public class PacketHandler {
             try {
                 String[] rgb = pixSplit[2].split("-");
                 color = new Color(Integer.parseInt(rgb[0]), Integer.parseInt(rgb[1]), Integer.parseInt(rgb[2]));
-            } catch(Exception bad) {
-                System.out.println("oops something bad with the color "+pixSplit[2].replaceAll("-", ","));
+            } catch(Exception bad) { System.out.println("oops something bad with the color "+pixSplit[2].replaceAll("-", ","));
             }//use black color if it fails for some reason
             Pixel pixel = new Pixel(x, y, color);
             pixel.setMaterialFromColor();

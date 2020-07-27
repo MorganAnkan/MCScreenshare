@@ -16,6 +16,7 @@ function start() {
         console.log("connected to the minecraft server!");
     });
     client.on("data", (data) => {
+        if(JSON.parse(data).type == "click") {
         var datastr = data.toString();
         console.log("recieved: " + datastr);
         var datasplit = datastr.split("\n").filter((a) => { return a !== "" });
@@ -23,6 +24,9 @@ function start() {
             var data = JSON.parse(data);
             clickScreen(data.x, data.y);
         });
+        } else if(JSON.parse(data).type == "type") {
+            robot.typeString(Buffer.from(JSON.parse(data).text, 'base64').toString('utf-8'));
+        }
     });
     client.on("end", () => {
         console.log("disconnected from server");

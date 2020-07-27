@@ -12,3 +12,6 @@ commands:
     aliases:
       - screenshare
       - start
+  type:
+    permission: mcscreenshare.type
+    usage: /type <text>

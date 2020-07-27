@@ -32,7 +32,7 @@ public class DrawCommand implements CommandExecutor, Listener {
             //       playerLoc.getBlockX())+", maxpixely+playerlocz: "+(maxPixel.getY() + playerLoc.getBlockZ()));
             if(blockLoc.getBlockX() > (maxPixel.getX() + playerLoc.getBlockX()) || blockLoc.getBlockZ() > (maxPixel.getY() + playerLoc.getBlockZ())
             || blockLoc.getBlockX() < playerLoc.getBlockX() || blockLoc.getBlockZ() < playerLoc.getBlockZ() || blockLoc.getBlockY() != playerLoc.getBlockY()) return;
-            PacketHandler.sendMessage("{\"x\":"+(blockLoc.getBlockX()-playerLoc.getBlockX())+",\"y\":"+(blockLoc.getBlockZ()-playerLoc.getBlockZ())+"}");
+            PacketHandler.sendMessage("{\"x\":"+(blockLoc.getBlockX()-playerLoc.getBlockX())+",\"y\":"+(blockLoc.getBlockZ()-playerLoc.getBlockZ())+",\"type\":\"click\"}");
         }
     }
 
