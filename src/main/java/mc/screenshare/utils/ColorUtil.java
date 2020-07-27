@@ -44,7 +44,6 @@ public class ColorUtil {
         colorMap.put(Material.BROWN_TERRACOTTA, new ColorSet<>(77, 51, 36));
         colorMap.put(Material.BROWN_WOOL, new ColorSet<>(114, 72, 41));
         //colorMap.put(Material.CARTOGRAPHY_TABLE, new ColorSet<>(104, 87, 67));
-        colorMap.put(Material.PUMPKIN, new ColorSet<>(150, 84, 17));
         colorMap.put(Material.CHISELED_QUARTZ_BLOCK, new ColorSet<>(232, 227, 217));
         colorMap.put(Material.CHISELED_RED_SANDSTONE, new ColorSet<>(183, 97, 28));
         colorMap.put(Material.CHISELED_SANDSTONE, new ColorSet<>(216, 203, 155));
@@ -169,6 +168,7 @@ public class ColorUtil {
         colorMap.put(Material.POLISHED_DIORITE, new ColorSet<>(193, 193, 195));
         colorMap.put(Material.POLISHED_GRANITE, new ColorSet<>(154, 107, 89));
         colorMap.put(Material.PRISMARINE_BRICKS, new ColorSet<>(99, 172, 158));
+        colorMap.put(Material.PUMPKIN, new ColorSet<>(150, 84, 17));
         colorMap.put(Material.PURPLE_CONCRETE, new ColorSet<>(100, 32, 156));
         colorMap.put(Material.PURPLE_CONCRETE_POWDER, new ColorSet<>(132, 56, 178));
         colorMap.put(Material.PURPLE_GLAZED_TERRACOTTA, new ColorSet<>(110, 48, 152));

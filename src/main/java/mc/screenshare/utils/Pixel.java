@@ -31,7 +31,7 @@ public class Pixel {
         return x;
     }
 
-    public int getZ() {
+    public int getY() {
         return y;
     }
 
@@ -42,5 +42,4 @@ public class Pixel {
     public Color getColor() {
         return color;
     }
-
 }

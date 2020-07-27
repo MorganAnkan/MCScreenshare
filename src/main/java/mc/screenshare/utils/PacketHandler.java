@@ -11,6 +11,9 @@ import java.util.ArrayList;
 
 public class PacketHandler {
     public static int port = Main.getConfigFile().getInt("port");
+    public static Socket socketa;
+    private static PrintWriter out = null;
+
     public static void safeStart() {
         try {
             start();
@@ -36,8 +39,12 @@ public class PacketHandler {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            socketa = socket;
             if(socket == null) return;
-
+            try {
+                out = new PrintWriter(socket.getOutputStream(), true);
+            } catch (IOException ignored) {
+            }
             InputStream inputStream = null;
             try {
                 inputStream = socket.getInputStream();
@@ -82,16 +89,8 @@ public class PacketHandler {
         DrawCommand.draw(pixels);
     }
 
-    public static boolean sendMessage(String message, Socket socket) {
-        try {
-            System.out.println("Sending "+message);
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            out.println(message);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
+    public static void sendMessage(String message) {
+        System.out.println("Sending "+message);
+        out.println(message);
     }
 }
