@@ -22,6 +22,11 @@ public class PacketHandler {
         }
     }
 
+    public static boolean isConnected() {
+        if(socketa == null) return false;
+        return socketa.isConnected();
+    }
+
     public static void start() throws Exception {
         ServerSocket server;
         try {

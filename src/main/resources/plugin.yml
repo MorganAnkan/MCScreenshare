@@ -14,4 +14,12 @@ commands:
       - start
   type:
     permission: mcscreenshare.type
+    description: Type a string remotely
     usage: /type <text>
+  press:
+    permission: mcscreenshare.presskey
+    description: Presses a key remotely
+    usage: /press <key>
+    aliases:
+      - presskey
+      - keypress

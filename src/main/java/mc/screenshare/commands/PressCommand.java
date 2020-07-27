@@ -5,9 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Base64;
-
-public class TypeCommand implements CommandExecutor {
+public class PressCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0) {
@@ -15,10 +13,9 @@ public class TypeCommand implements CommandExecutor {
             return true;
         }
         if(PacketHandler.isConnected()) {
-            sender.sendMessage("hmmm not connected");
-        } else {
-            sender.sendMessage("attempting to make the client type: "+String.join(" ", args));
-            PacketHandler.sendMessage("{\"text\":\"" + Base64.getEncoder().encodeToString(String.join(" ", args).getBytes()) + "\",\"type\":\"type\"}");
+            String key = String.join("_",args).toLowerCase();
+            sender.sendMessage("attempting to press key "+key+" on the client");
+            PacketHandler.sendMessage("{\"type\":\"presskey\", \"key\":\""+key+"\"}");
         }
         return true;
     }

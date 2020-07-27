@@ -8,6 +8,7 @@ var fps = 10;
 var screenSize = robot.getScreenSize();
 var settings = { maxWidth: 189, maxHeight: 189 };
 var mcSize = resize(screenSize.width, screenSize.height, settings.maxWidth, settings.maxHeight);
+var probablyValidKeys = ["backspace", "delete", "enter", "tab", "escape", "up", "down", "right", "left", "home", "end", "pageup", "pagedown", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "command", "alt", "control", "shift", "right_shift", "space", "printscreen", "insert", "audio_mute", "audio_vol_down", "audio_vol_up", "audio_play", "audio_stop", "audio_pause", "audio_prev", "audio_next", "audio_rewind", "audio_forward", "audio_repeat", "audio_random", "numpad_0", "numpad_1", "numpad_2", "numpad_3", "numpad_4", "numpad_5", "numpad_6", "numpad_7", "numpad_8", "numpad_9", "lights_mon_up", "lights_mon_down", "lights_kbd_toggle", "lights_kbd_up", "lights_kbd_down"];
 
 function start() {
     console.log(`Running on ${fps}fps (interval of ${(1000 / fps).toFixed(2)}ms)`);
@@ -16,16 +17,26 @@ function start() {
         console.log("connected to the minecraft server!");
     });
     client.on("data", (data) => {
-        if(JSON.parse(data).type == "click") {
-        var datastr = data.toString();
-        console.log("recieved: " + datastr);
-        var datasplit = datastr.split("\n").filter((a) => { return a !== "" });
-        datasplit.forEach((data) => {
-            var data = JSON.parse(data);
-            clickScreen(data.x, data.y);
-        });
-        } else if(JSON.parse(data).type == "type") {
-            robot.typeString(Buffer.from(JSON.parse(data).text, 'base64').toString('utf-8'));
+        var parsed = JSON.parse(data);
+
+        if(parsed.type == "click") {
+            var datastr = data.toString();
+            console.log("recieved: " + datastr);
+            var datasplit = datastr.split("\n").filter((a) => { return a !== "" });
+            datasplit.forEach((data) => {
+               var data = JSON.parse(data);
+               clickScreen(data.x, data.y);
+            });
+        } else if(parsed.type == "type") {
+            var typing = Buffer.from(parsed.text, 'base64').toString('utf-8');
+            console.log(`typing ${typing}`);
+            robot.typeString(typing);
+        } else if(parsed.type == "presskey") {
+            var key = parsed.key;
+            if(probablyValidKeys.includes(key)) {
+                console.log(`pressing key ${key}`);
+                robot.keyTap(key);
+            }
         }
     });
     client.on("end", () => {
