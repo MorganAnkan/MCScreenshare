@@ -17,27 +17,25 @@ function start() {
         console.log("connected to the minecraft server!");
     });
     client.on("data", (data) => {
-        var parsed = JSON.parse(data);
-
-        if(parsed.type == "click") {
-            var datastr = data.toString();
-            console.log("recieved: " + datastr);
-            var datasplit = datastr.split("\n").filter((a) => { return a !== "" });
-            datasplit.forEach((data) => {
-               var data = JSON.parse(data);
-               clickScreen(data.x, data.y);
-            });
-        } else if(parsed.type == "type") {
-            var typing = Buffer.from(parsed.text, 'base64').toString('utf-8');
-            console.log(`typing ${typing}`);
-            robot.typeString(typing);
-        } else if(parsed.type == "presskey") {
-            var key = parsed.key;
-            if(probablyValidKeys.includes(key)) {
-                console.log(`pressing key ${key}`);
-                robot.keyTap(key);
-            }
-        }
+		var datastr = data.toString();
+		console.log("recieved: " + datastr);
+		var datasplit = datastr.split("\n").filter((a) => { return a !== "" });
+		datasplit.forEach((data) => {//sometimes java decides to send multiple packets in one
+			var parsed = JSON.parse(data);
+			if(parsed.type == "click") {
+                clickScreen(parsed.x, parsed.y);
+			} else if(parsed.type == "type") {
+				var typing = Buffer.from(parsed.text, 'base64').toString('utf-8');
+				console.log(`typing ${typing}`);
+				robot.typeString(typing);
+			} else if(parsed.type == "presskey") {
+				var key = parsed.key;
+				if(probablyValidKeys.includes(key)) {
+					console.log(`pressing key ${key}`);
+					robot.keyTap(key);
+				}
+			}
+		});
     });
     client.on("end", () => {
         console.log("disconnected from server");
