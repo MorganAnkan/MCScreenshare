@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>MCScreenshare</groupId>
-    <artifactId>mc.screenshare</artifactId>
-    <version>1.0</version>
+    <artifactId>MCScreenshare</artifactId>
+    <version>1.3</version>
     <packaging>jar</packaging>
 
     <name>MCScreenshare</name>
