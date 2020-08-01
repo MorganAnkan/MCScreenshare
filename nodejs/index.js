@@ -17,6 +17,7 @@ function start() {
         console.log("connected to the minecraft server!");
     });
     client.on("data", (data) => {
+    try {
 		var datastr = data.toString();
 		console.log("recieved: " + datastr);
 		var datasplit = datastr.split("\n").filter((a) => { return a !== "" });
@@ -27,19 +28,18 @@ function start() {
 			} else if(parsed.type == "type") {
 				var typing = parsed.text;
 				console.log(`typing ${typing}`);
-				robot.typeString(typing);
+				robot.typeStringDelayed(typing, 1500);
 			} else if(parsed.type == "presskey") {
 				var key = parsed.key;
 				if(probablyValidKeys.includes(key)) {
-				try {
 					console.log(`pressing key ${key}`);
 					robot.keyTap(key);
-					} catch(e) {
-					    console.log("Error while pressing key \""+key+"\": "+e.toString());
-					}
 				}
 			}
 		});
+		} catch(e) {
+		    console.log("Error: "+e)
+		}
     });
     client.on("end", () => {
         console.log("disconnected from server");

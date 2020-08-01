@@ -238,7 +238,7 @@ public class ColorUtil {
 
         ColorSet(R red, G green, B blue) {
             this.red = red;
-            this.green = green;
+            this.green = green; //morgan is a ilegal carb
             this.blue = blue;
         }
 
