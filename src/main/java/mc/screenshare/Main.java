@@ -3,6 +3,7 @@ package mc.screenshare;
 import mc.screenshare.commands.DrawCommand;
 import mc.screenshare.commands.PressCommand;
 import mc.screenshare.commands.TypeCommand;
+import mc.screenshare.tabcomplete.PressTabComplete;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.PluginManager;
@@ -19,6 +20,7 @@ public final class Main extends JavaPlugin {
         this.getCommand("draw").setExecutor(new DrawCommand());
         this.getCommand("type").setExecutor(new TypeCommand());
         this.getCommand("press").setExecutor(new PressCommand());
+        this.getCommand("press").setTabCompleter(new PressTabComplete());
         getConfig().options().copyDefaults();
         saveDefaultConfig();
     }
