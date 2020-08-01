@@ -31,8 +31,12 @@ function start() {
 			} else if(parsed.type == "presskey") {
 				var key = parsed.key;
 				if(probablyValidKeys.includes(key)) {
+				try {
 					console.log(`pressing key ${key}`);
 					robot.keyTap(key);
+					} catch(e) {
+					    console.log("Error while pressing key \""+key+"\": "+e.toString());
+					}
 				}
 			}
 		});
