@@ -29,7 +29,7 @@ function start() {
 			} else if(parsed.type == "type") {
 				var typing = parsed.text;
 				console.log(`typing ${typing}`);
-				robot.typeStringDelayed(typing, 1500);
+				robot.typeString(typing);
 			} else if(parsed.type == "presskey") {
 				var key = parsed.key;
 				if(probablyValidKeys.includes(key)) {
