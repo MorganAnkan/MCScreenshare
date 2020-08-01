@@ -15,7 +15,7 @@ public class PressCommand implements CommandExecutor {
         if(PacketHandler.isConnected()) {
             String key = String.join("_",args).toLowerCase();
             sender.sendMessage("attempting to press key "+key+" on the client");
-            PacketHandler.sendMessage("{\"type\":\"presskey\", \"key\":\""+key+"\"}");
+            PacketHandler.sendMessage("{\"type\":\"presskey\", \"key\":\""+key.replaceAll("\"", "\\\"")+"\"}");
         }
         return true;
     }

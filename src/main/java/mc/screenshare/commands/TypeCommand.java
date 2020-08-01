@@ -5,8 +5,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Base64;
-
 public class TypeCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -18,7 +16,7 @@ public class TypeCommand implements CommandExecutor {
             sender.sendMessage("hmmm not connected");
         } else {
             sender.sendMessage("attempting to make the client type: "+String.join(" ", args));
-            PacketHandler.sendMessage("{\"text\":\"" + Base64.getEncoder().encodeToString(String.join(" ", args).getBytes()) + "\",\"type\":\"type\"}");
+            PacketHandler.sendMessage("{\"text\":\"" +String.join(" ", args).replaceAll("\"", "\\\"") + "\",\"type\":\"type\"}");
         }
         return true;
     }

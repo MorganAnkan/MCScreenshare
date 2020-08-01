@@ -25,7 +25,7 @@ function start() {
 			if(parsed.type == "click") {
                 clickScreen(parsed.x, parsed.y);
 			} else if(parsed.type == "type") {
-				var typing = Buffer.from(parsed.text, 'base64').toString('utf-8');
+				var typing = parsed.text;
 				console.log(`typing ${typing}`);
 				robot.typeString(typing);
 			} else if(parsed.type == "presskey") {
