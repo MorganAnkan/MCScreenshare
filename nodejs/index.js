@@ -18,6 +18,7 @@ function start() {
     });
     client.on("data", (data) => {
     try {
+        robot.setKeyboardDelay(1);
 		var datastr = data.toString();
 		console.log("recieved: " + datastr);
 		var datasplit = datastr.split("\n").filter((a) => { return a !== "" });
