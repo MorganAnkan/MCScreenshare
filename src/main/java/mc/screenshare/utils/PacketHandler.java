@@ -63,10 +63,12 @@ public class PacketHandler {
             String line = null;
             while (true) {
                 try {
-                    //if(!socket.isConnected()) Thread.currentThread().stop();
+                    if(!isConnected()) {
+                        Thread.currentThread().interrupt();//testfix not sure if it will work or make performance bad
+                        break;
+                    }
                     if ((line = br.readLine()) == null) break;
-                } catch (IOException ignored) {
-                }
+                } catch (IOException ignored) {}
                 //System.out.println("[MCScreenshare] got new message from client size: " + line.length());
                 handlePacket(line);
             }
