@@ -52,7 +52,7 @@ public class ColorUtil {
         colorMap.put(Material.COAL_ORE, new ColorSet<>(116, 116, 116));
         colorMap.put(Material.COARSE_DIRT, new ColorSet<>(119, 86, 59));
         colorMap.put(Material.COBBLESTONE, new ColorSet<>(128, 127, 128));
-        colorMap.put(Material.COBWEB, new ColorSet<>(227, 232, 234));
+        //colorMap.put(Material.COBWEB, new ColorSet<>(227, 232, 234));
         //colorMap.put(Material.CONDUIT, new ColorSet<>(160, 140, 113));
         colorMap.put(Material.CRACKED_STONE_BRICKS, new ColorSet<>(118, 118, 118));
         //colorMap.put(Material.CRAFTING_TABLE, new ColorSet<>(120, 73, 42));
