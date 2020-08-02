@@ -59,6 +59,9 @@ public class DrawCommand implements CommandExecutor, Listener {
         int z = playerLoc.getBlockZ();
 
         for (Pixel pixel : pixels) {
+            if(!Main.getPlugin().isEnabled()) {
+                return;
+            }
             Location locationToPlace = new Location(currentWorld, x+pixel.x, y, z+pixel.y);
             Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), new Runnable() {
                 @Override

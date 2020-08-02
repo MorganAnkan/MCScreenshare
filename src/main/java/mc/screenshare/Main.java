@@ -6,6 +6,7 @@ import mc.screenshare.commands.TypeCommand;
 import mc.screenshare.tabcomplete.PressTabComplete;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,6 +29,8 @@ public final class Main extends JavaPlugin {
     public static Configuration getConfigFile() {
         return Bukkit.getPluginManager().getPlugin("MCScreenshare").getConfig();
     }
-
+    public static Plugin getPlugin() {
+        return Bukkit.getPluginManager().getPlugin("MCScreenshare");
+    }
 
 }
