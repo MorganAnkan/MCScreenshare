@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -30,10 +32,19 @@ public class DrawCommand implements CommandExecutor, Listener {
             Location blockLoc = event.getBlock().getLocation();
             //System.out.println("blockloc: "+blockLoc.toString()+", maxpixelx+playerlocx: "+(maxPixel.getX() +
             //       playerLoc.getBlockX())+", maxpixely+playerlocz: "+(maxPixel.getY() + playerLoc.getBlockZ()));
-            if(blockLoc.getBlockX() > (maxPixel.getX() + playerLoc.getBlockX()) || blockLoc.getBlockZ() > (maxPixel.getY() + playerLoc.getBlockZ())
-            || blockLoc.getBlockX() < playerLoc.getBlockX() || blockLoc.getBlockZ() < playerLoc.getBlockZ() || blockLoc.getBlockY() != playerLoc.getBlockY()) return;
+            if(!isLocationInScreen(blockLoc)) return;
             PacketHandler.sendMessage("{\"x\":"+(blockLoc.getBlockX()-playerLoc.getBlockX())+",\"y\":"+(blockLoc.getBlockZ()-playerLoc.getBlockZ())+",\"type\":\"click\"}");
         }
+    }
+
+    @EventHandler
+    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+        if(isLocationInScreen(event.getBlock().getLocation())) event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockPhysics(BlockPhysicsEvent event) {
+        if(isLocationInScreen(event.getBlock().getLocation())) event.setCancelled(true);
     }
 
     @Override
@@ -70,6 +81,12 @@ public class DrawCommand implements CommandExecutor, Listener {
                 }
             });
         }
+    }
+
+    public static boolean isLocationInScreen(Location location) {
+        if(playerLoc == null || maxPixel == null) return false;
+        return location.getBlockX() <= (maxPixel.getX() + playerLoc.getBlockX()) && location.getBlockZ() <= (maxPixel.getY() + playerLoc.getBlockZ())
+                && location.getBlockX() >= playerLoc.getBlockX() && location.getBlockZ() >= playerLoc.getBlockZ() && location.getBlockY() == playerLoc.getBlockY();
     }
 
     private static Pixel getMaxCoord(ArrayList<Pixel> list) {

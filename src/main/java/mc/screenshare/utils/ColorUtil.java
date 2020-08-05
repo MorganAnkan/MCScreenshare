@@ -109,7 +109,7 @@ public class ColorUtil {
         colorMap.put(Material.JUNGLE_LOG, new ColorSet<>(150, 109, 71));
         colorMap.put(Material.JUNGLE_PLANKS, new ColorSet<>(160, 115, 81));
         colorMap.put(Material.LAPIS_BLOCK, new ColorSet<>(31, 67, 140));
-        colorMap.put(Material.LECTERN, new ColorSet<>(174, 138, 83));
+        //colorMap.put(Material.LECTERN, new ColorSet<>(174, 138, 83));
         colorMap.put(Material.LIGHT_BLUE_CONCRETE, new ColorSet<>(36, 137, 199));
         colorMap.put(Material.LIGHT_BLUE_CONCRETE_POWDER, new ColorSet<>(74, 181, 213));
         colorMap.put(Material.LIGHT_BLUE_GLAZED_TERRACOTTA, new ColorSet<>(95, 165, 209));
