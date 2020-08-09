@@ -4,7 +4,7 @@ var net = require("net");
 
 //var lastTime = Date.now();
 var client = null;
-var fps = 10;
+var fps = 3;
 var screenSize = robot.getScreenSize();
 var settings = {
     maxWidth: 200,
