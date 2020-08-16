@@ -7,6 +7,6 @@ This is a plugin to allow other people to see your screen in Minecraft!
 4. Move/copy MCScreenshare to your server's plugins folder
 ## Usage
 1. Go to a flat area
-2. Go to the folder "nodejs" located in the .zip file and run `npm install jimp robotjs` in a terminal
+2. Go to the folder `nodejs` located in the .zip file and run `npm install jimp robotjs` in a terminal
 3. Run /draw, /screenshare or /start
 4. Now run `node index.js` in the terminal. The Minecraft server should start showing your screen. Have fun!
