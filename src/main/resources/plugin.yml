@@ -1,0 +1,15 @@
+name: MCScreenshare
+version: ${project.version}
+main: mc.screenshare.MCScreenshare
+api-version: 1.13
+authors: [MorganAnkan, TheBlueBurger]
+description: Screenshare but it displays in minecraft.
+website: https://blueburgerstdd.github.io/mcscreenshare/
+commands:
+  draw:
+    usage: /draw
+    description: Start the screenshare
+    permission: mcscreenshare.draw
+    aliases:
+      - screenshare
+      - start
