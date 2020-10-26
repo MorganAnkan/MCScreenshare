@@ -66,9 +66,9 @@ function print(image, cb) {
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             let color = Jimp.intToRGBA(image.getPixelColor(x, y));
-            buffer.writeUInt8(color.r, offset++);
-            buffer.writeUInt8(color.g, offset++);
-            buffer.writeUInt8(color.b, offset++);
+            buffer.writeInt8(color.r - 128, offset++);
+            buffer.writeInt8(color.g - 128, offset++);
+            buffer.writeInt8(color.b - 128, offset++);
         }
     }
 
@@ -80,17 +80,6 @@ function print(image, cb) {
         if (e) console.log("oops write error:", e);
 		cb();
     });
-}
-
-function resize(width, height, maxWidth, maxHeight) {
-    var ratioX = maxWidth / width;
-    var ratioY = maxHeight / height;
-    var ratio = Math.min(ratioX, ratioY);
-
-    var newWidth = width * ratio;
-    var newHeight = height * ratio;
-
-    return { width: Math.round(newWidth), height: Math.round(newHeight) };
 }
 
 /*
@@ -130,3 +119,4 @@ function toHex(red, green, blue) {
 
     return ((blue | green << 8 | red << 16) | 1 << 24).toString(16).slice(1);
 };*/
+
