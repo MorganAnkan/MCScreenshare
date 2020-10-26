@@ -82,6 +82,17 @@ function print(image, cb) {
     });
 }
 
+function resize(width, height, maxWidth, maxHeight) {
+    var ratioX = maxWidth / width;
+    var ratioY = maxHeight / height;
+    var ratio = Math.min(ratioX, ratioY);
+
+    var newWidth = width * ratio;
+    var newHeight = height * ratio;
+
+    return { width: Math.round(newWidth), height: Math.round(newHeight) };
+}
+
 /*
 function clickScreen(mcX = 0, mcY = 0) {
     var oldPos = robot.getMousePos();
@@ -119,4 +130,3 @@ function toHex(red, green, blue) {
 
     return ((blue | green << 8 | red << 16) | 1 << 24).toString(16).slice(1);
 };*/
-
