@@ -24,7 +24,7 @@ import java.awt.image.BufferedImage;
 
 public class DrawCommand implements CommandExecutor, Listener {
 
-    public static int getRainbow(int speed, float saturation, float brightness, int offset) {
+    public static int getRainbow(int speed, float saturation, float brightness, int offset) { //add a comment for no reason
         double hue = Math.ceil((System.currentTimeMillis() + offset) / speed);
         hue %= 360.0;
         return Color.getHSBColor((float) (hue / 360.0), saturation, brightness).getRGB();
