@@ -67,7 +67,10 @@ public class PacketHandler extends Thread {
             }
             ByteBuffer buffer = ByteBuffer.wrap(header_bytes);
             int size = buffer.getInt();
-
+            if(size < header_bytes.length + 1) {
+                parsePacket(stream);
+                return;
+            }
             byte[] data = new byte[size - header_bytes.length];
             int count = stream.read(data);
             if (count != (size - header_bytes.length)) {
