@@ -12,7 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-public class PacketHandler {
+public class PacketHandler extends Thread {
     public static int port = 4444;
     public static Socket socketa;
     private static PrintWriter out = null;
@@ -23,15 +23,19 @@ public class PacketHandler {
         return socketa.isConnected();
     }
 
-    public static void start() throws Exception {
-        ServerSocket server;
+    @Override
+    public void run() {
+        startlol();
+    }
+
+    public static void startlol() {
+        ServerSocket server = null;
         try {
             server = new ServerSocket(port);
         } catch (IOException e) {
-            throw new Exception("[MCScreenshare] ERROR: Could not listen on port "+port);
+            System.out.println("[MCScreenshare] ERROR: Could not listen on port "+port);
         }
-
-        new Thread(() -> {
+        if(server == null) return;
             System.out.println("Waiting for client ...");
             Socket socket = null;
 
@@ -43,50 +47,66 @@ public class PacketHandler {
                 if (socket == null) return;
 
                 out = new PrintWriter(socket.getOutputStream(), true);
-                bis = new BufferedInputStream(socket.getInputStream());
+
+                DataInputStream stream = new DataInputStream(socket.getInputStream());
+                parsePacket(stream);
             } catch(Exception err) {
                 err.printStackTrace();
             }
-            try {
-                if(socket == null) return;
-                DataInputStream stream = new DataInputStream(socket.getInputStream());
-                byte[] header_bytes = new byte[4];
-                int header_byte_count = stream.read(header_bytes, 0, header_bytes.length);
-                if (header_byte_count != header_bytes.length) {
-                    stream.close();
-                    return;
-                }
-                ByteBuffer buffer = ByteBuffer.wrap(header_bytes);
-                int size = buffer.getInt();
+    }
 
-                byte[] data = new byte[size - header_bytes.length];
-                int count = stream.read(data);
-                if (count != (size - header_bytes.length)) {
-                    stream.close();
-                    return;
-                }
-                buffer = ByteBuffer.wrap(data);
-                int width = buffer.getInt();
-                int height = buffer.getInt(4);
-                int offset = 8;
-
-                colors = new Color[height][width];
-
-                for (int y = 0; y < height; y++) {
-                    for (int x = 0; x < width; x++) {
-                        int r = buffer.get(offset++);
-                        int g = buffer.get(offset++);
-                        int b = buffer.get(offset++);
-                        //System.out.println("r "+ (r+128)+ " g "+(g+128)+" b " + (b+128) );
-                        Color color = new Color(r + 128, g + 128, b + 128);
-                        colors[y][x] = color;
-                    }
-                }
-                stream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public static void parsePacket(DataInputStream stream) {
+        try {
+            byte[] header_bytes = new byte[4];
+            int header_byte_count = stream.read(header_bytes, 0, header_bytes.length);
+            if (header_byte_count != header_bytes.length) {
+                //stream.close();
+                System.out.println("bad packet recieved");
+                parsePacket(stream);
+                return;
             }
-        }).start();
+            ByteBuffer buffer = ByteBuffer.wrap(header_bytes);
+            int size = buffer.getInt();
+
+            byte[] data = new byte[size - header_bytes.length];
+            int count = stream.read(data);
+            if (count != (size - header_bytes.length)) {
+                //stream.close();
+                System.out.println("bad packet recieved");
+                parsePacket(stream);
+                return;
+            }
+
+            buffer = ByteBuffer.wrap(data);
+            int width = buffer.getInt();
+            int height = buffer.getInt(4);
+            int offset = 8;
+
+            colors = new Color[height][width];
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int r = buffer.get(offset++);
+                    int g = buffer.get(offset++);
+                    int b = buffer.get(offset++);
+                    //System.out.println("r "+ (r+128)+ " g "+(g+128)+" b " + (b+128) );
+                    Color color = new Color(r + 128, g + 128, b + 128);
+                    colors[y][x] = color;
+                }
+            }
+            parsePacket(stream);
+            //stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                stream.close();
+                if(isConnected()) socketa.close();
+                Thread.currentThread().interrupt();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+        }
     }
 
     public static Color[][] getColors() {

@@ -61,7 +61,7 @@ public class DrawCommand implements CommandExecutor, Listener {
             sender.sendMessage("Starting socket server on port " + PacketHandler.getPort() + "...");
             boolean cancel = false;
             try {
-                PacketHandler.start();
+                new PacketHandler().start();
             } catch (Exception e) {
                 sender.sendMessage("§cFailed to start socket server... (check console for more details)");
                 e.printStackTrace();
