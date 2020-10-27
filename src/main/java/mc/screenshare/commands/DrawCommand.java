@@ -1,7 +1,6 @@
 package mc.screenshare.commands;
 
 import mc.screenshare.MCScreenshare;
-import mc.screenshare.utils.PacketHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,37 +17,31 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
+import org.bukkit.scheduler.BukkitRunnable;
+import imgscalr.Scalr;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class DrawCommand implements CommandExecutor, Listener {
-
-    public static int getRainbow(int speed, float saturation, float brightness, int offset) { //add a comment for no reason
-        double hue = Math.ceil((System.currentTimeMillis() + offset) / speed);
-        hue %= 360.0;
-        return Color.getHSBColor((float) (hue / 360.0), saturation, brightness).getRGB();
-    }
+    private static BufferedImage currentImg = null;
+    private static int maxWidth = 128;
+    private static int maxHeight = 128;
+    private static int renderFPS = 1;
 
     static public class Renderer extends MapRenderer {
         @Override
         public void render(MapView map, MapCanvas canvas, Player player) {
-            BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
-            Graphics g = image.getGraphics();
-            Color[][] pixels = PacketHandler.getColors();
-            if(pixels == null || pixels.length == 0) {
-                g.setColor(Color.RED);
+            if(currentImg == null) {
+                BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics g = image.getGraphics();
+                g.setColor(Color.BLUE);
                 g.fillRect(0, 0, 128, 128);
+                canvas.drawImage(0, 0, image);
                 return;
             }
 
-            for (int y = 0; y < pixels.length; y++) {
-                for (int x = 0; x < pixels[0].length; x++) {
-                    g.setColor(pixels[y][x]);
-                    g.fillRect(x, y, Math.min(x + 1, pixels[0].length), Math.min(y + 1, pixels.length));
-                }
-            }
-            canvas.drawImage(0, 0, image);
+            canvas.drawImage(0, 0, currentImg);
         }
     }
 
@@ -57,17 +50,16 @@ public class DrawCommand implements CommandExecutor, Listener {
         if(sender instanceof ConsoleCommandSender) {
             sender.sendMessage("You can't execute this from console!");
         } else {
-            Player player = ((Player) sender);
-            sender.sendMessage("Starting socket server on port " + PacketHandler.getPort() + "...");
-            boolean cancel = false;
-            try {
-                new PacketHandler().start();
-            } catch (Exception e) {
-                sender.sendMessage("§cFailed to start socket server... (check console for more details)");
-                e.printStackTrace();
-                cancel = true;
+            if(args.length > 1) {
+                int fps = -1;
+                try {
+                    fps = Integer.parseInt(args[0]);
+                } catch(Exception ignored) {}
+                if(fps < 1) fps = 1;
+                if(fps > 20) fps = 20;
+                renderFPS = fps;
             }
-            if(cancel) return true;
+            Player player = ((Player) sender);
             sender.sendMessage("Checking for nearby itemframes...");
             Bukkit.getScheduler().runTask(MCScreenshare.getPlugin(MCScreenshare.class), new Runnable() {
                 @Override
@@ -89,7 +81,36 @@ public class DrawCommand implements CommandExecutor, Listener {
                     }
                 }
             });
-            return true;
+
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        Robot robot = new Robot();
+                        int width = Toolkit.getDefaultToolkit().getScreenSize().width;
+                        int height = Toolkit.getDefaultToolkit().getScreenSize().height;
+
+                        Image image = robot.createScreenCapture(new Rectangle(0, 0, width, height));
+
+                        BufferedImage bi = new BufferedImage(width, height,
+                                BufferedImage.TYPE_INT_ARGB);
+                        Graphics g = bi.createGraphics();
+                        g.drawImage(image, 0, 0, width, height, null);
+
+                        double ratioX = (double) maxWidth / width;
+                        double ratioY = (double) maxHeight / height;
+                        double ratio = Math.min(ratioX, ratioY);
+
+                        double newWidth = width * ratio;
+                        double newHeight = height * ratio;
+
+                        //System.out.println("nw:"+Math.round(newWidth)+"nh:"+Math.round(newHeight)+"w:"+width+"h:"+height);
+                        currentImg = Scalr.resize(bi, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, Math.round((int)newWidth), Math.round((int)newHeight), Scalr.OP_ANTIALIAS);
+                    } catch (AWTException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.runTaskTimer(MCScreenshare.getPlugin(MCScreenshare.class), 0, Math.round(20f/renderFPS));
         }
         return true;
     }

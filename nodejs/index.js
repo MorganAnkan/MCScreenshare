@@ -55,13 +55,17 @@ function print(image, cb) {
 
     image.resize(width, height);
 
-    let buffer = Buffer.alloc(12 + width * height * 3);
-    let offset = 12;
+    let buffer = Buffer.alloc(16 + 8 + width * height * 3);
+    let offset = 0;
 
+    for (let i = 0; i < 2; i++) {
+        buffer.writeInt32BE(1145455686) //equivalent of [68, 70, 68, 70]
+        offset += 4
+    }
 
-    buffer.writeInt32BE(buffer.length);
-    buffer.writeInt32BE(width, 4);
-    buffer.writeInt32BE(height, 8);
+    buffer.writeInt32BE(width, offset);
+    offset += 4;
+    buffer.writeInt32BE(height, offset);
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
@@ -72,13 +76,18 @@ function print(image, cb) {
         }
     }
 
+    for (let i = 0; i < 2; i++) {
+        buffer.writeInt32BE(1145455686) //equivalent of [68, 70, 68, 70]
+        offset += 4
+    }
+
     if (client == null) {
         console.log("client was null ofo");
         return cb();
     }
     client.write(buffer, (e) => {
         if (e) console.log("oops write error:", e);
-		cb();
+        cb();
     });
 }
 
@@ -96,28 +105,21 @@ function resize(width, height, maxWidth, maxHeight) {
 /*
 function clickScreen(mcX = 0, mcY = 0) {
     var oldPos = robot.getMousePos();
-
     var oldX = oldPos.x;
     var oldY = oldPos.x;
-
     var ratioX = screenSize.width / mcSize.width;
     var ratioY = screenSize.height / mcSize.height;
-
     var newX = Math.round(Math.max((ratioX * mcX) - ratioX / 2, 0));
     var newY = Math.round(Math.max((ratioY * mcY) - ratioY / 2, 0));
-
     console.log(`Clicking at x: ${newX}, y: ${newY}`);
     robot.moveMouse(newX, newY);
     robot.mouseClick();
     robot.moveMouse(oldX, oldY);
 }
-
 function toHex(red, green, blue) {
-
     if (typeof red === "string") {
         [red, green, blue, alpha] = red.match(/(0?\.?\d{1,3})%?\b/g).map(Number);
     }
-
     if (typeof red !== "number" ||
         typeof green !== "number" ||
         typeof blue !== "number" ||
@@ -127,6 +129,5 @@ function toHex(red, green, blue) {
     ) {
         throw new TypeError("Expected three numbers below 256");
     }
-
     return ((blue | green << 8 | red << 16) | 1 << 24).toString(16).slice(1);
 };*/
