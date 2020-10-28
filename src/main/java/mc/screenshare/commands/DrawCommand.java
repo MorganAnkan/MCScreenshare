@@ -1,101 +1,117 @@
 package mc.screenshare.commands;
 
-import mc.screenshare.Main;
-import mc.screenshare.utils.PacketHandler;
-import mc.screenshare.utils.Pixel;
+import mc.screenshare.MCScreenshare;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPhysicsEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
+import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
+import org.bukkit.scheduler.BukkitRunnable;
+import imgscalr.Scalr;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 
 public class DrawCommand implements CommandExecutor, Listener {
-    private static Location playerLoc;
-    private static World currentWorld;
-    private static Pixel maxPixel;
+    private static BufferedImage currentImg = null;
+    private static int maxWidth = 128;
+    private static int maxHeight = 128;
+    private static int renderFPS = 1;
 
-    @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-        if(maxPixel == null || currentWorld == null || playerLoc == null) return;
-        if (event.getPlayer().hasPermission("mcscreenshare.touchscreen")) {
-            Location blockLoc = event.getBlock().getLocation();
-            //System.out.println("blockloc: "+blockLoc.toString()+", maxpixelx+playerlocx: "+(maxPixel.getX() +
-            //       playerLoc.getBlockX())+", maxpixely+playerlocz: "+(maxPixel.getY() + playerLoc.getBlockZ()));
-            if(!isLocationInScreen(blockLoc)) return;
-            PacketHandler.sendMessage("{\"x\":"+(blockLoc.getBlockX()-playerLoc.getBlockX())+",\"y\":"+(blockLoc.getBlockZ()-playerLoc.getBlockZ())+",\"type\":\"click\"}");
+    static public class Renderer extends MapRenderer {
+        @Override
+        public void render(MapView map, MapCanvas canvas, Player player) {
+            if(currentImg == null) {
+                BufferedImage image = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+                Graphics g = image.getGraphics();
+                g.setColor(Color.BLUE);
+                g.fillRect(0, 0, 128, 128);
+                canvas.drawImage(0, 0, image);
+                return;
+            }
+
+            canvas.drawImage(0, 0, currentImg);
         }
-    }
-
-    @EventHandler
-    public void onEntityChangeBlock(EntityChangeBlockEvent event) {
-        if(isLocationInScreen(event.getBlock().getLocation())) event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onBlockPhysics(BlockPhysicsEvent event) {
-        if(isLocationInScreen(event.getBlock().getLocation())) event.setCancelled(true);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof ConsoleCommandSender) {
-            System.out.println("Starting packet handler");
+            sender.sendMessage("You can't execute this from console!");
         } else {
-            sender.sendMessage("Starting socketserver...\nPlease note that your current location will be the start position.");
-            Player player = (Player) sender;
-            playerLoc = player.getLocation();
-            currentWorld = player.getWorld();
-        }
-        PacketHandler.safeStart();
-        return true;
-    }
-
-    public static void draw(ArrayList<Pixel> pixels) {
-        if(playerLoc == null || currentWorld == null) return;
-
-        maxPixel = getMaxCoord(pixels);
-        int x = playerLoc.getBlockX();
-        int y = playerLoc.getBlockY();
-        int z = playerLoc.getBlockZ();
-
-        for (Pixel pixel : pixels) {
-            if(!Main.getPlugin().isEnabled()) {
-                return;
+            if(args.length > 1) {
+                int fps = -1;
+                try {
+                    fps = Integer.parseInt(args[0]);
+                } catch(Exception ignored) {}
+                if(fps < 1) fps = 1;
+                if(fps > 20) fps = 20;
+                renderFPS = fps;
             }
-            Location locationToPlace = new Location(currentWorld, x+pixel.x, y, z+pixel.y);
-            Bukkit.getScheduler().runTask(Main.getPlugin(Main.class), new Runnable() {
+            Player player = ((Player) sender);
+            sender.sendMessage("Checking for nearby itemframes...");
+            Bukkit.getScheduler().runTask(MCScreenshare.getPlugin(MCScreenshare.class), new Runnable() {
                 @Override
                 public void run() {
-                    locationToPlace.getBlock().setType(pixel.getMaterial());
+                    Location loc = player.getLocation();
+                    for (Entity entity : player.getNearbyEntities(loc.getX(), loc.getY(), loc.getZ())) {
+                        if(entity instanceof ItemFrame) {
+                            ItemStack item = ((ItemFrame) entity).getItem();
+                            if(item.getType().equals(Material.FILLED_MAP)) {
+                                sender.sendMessage("Using itemframe with filled map at X: " +
+                                        entity.getLocation().getBlockX()+", Y: "+entity.getLocation().getBlockY() + ", Z: " + entity.getLocation().getBlockZ());
+                                MapView mapView = ((MapMeta) item.getItemMeta()).getMapView();
+                                if (mapView != null) {
+                                    mapView.getRenderers().forEach(mapView::removeRenderer);
+                                    mapView.addRenderer(new Renderer());
+                                }
+                            }
+                        }
+                    }
                 }
             });
-        }
-    }
 
-    public static boolean isLocationInScreen(Location location) {
-        if(playerLoc == null || maxPixel == null) return false;
-        return location.getBlockX() <= (maxPixel.getX() + playerLoc.getBlockX()) && location.getBlockZ() <= (maxPixel.getY() + playerLoc.getBlockZ())
-                && location.getBlockX() >= playerLoc.getBlockX() && location.getBlockZ() >= playerLoc.getBlockZ() && location.getBlockY() == playerLoc.getBlockY();
-    }
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    try {
+                        Robot robot = new Robot();
+                        int width = Toolkit.getDefaultToolkit().getScreenSize().width;
+                        int height = Toolkit.getDefaultToolkit().getScreenSize().height;
 
-    private static Pixel getMaxCoord(ArrayList<Pixel> list) {
-        Pixel maxCoord = new Pixel(0, 0, new Color(255, 255, 255));
-        for (Pixel pixel : list) {
-            if (pixel.x > maxCoord.getX() || pixel.y > maxCoord.getY()) {
-                maxCoord = pixel;
-            }
+                        Image image = robot.createScreenCapture(new Rectangle(0, 0, width, height));
+
+                        BufferedImage bi = new BufferedImage(width, height,
+                                BufferedImage.TYPE_INT_ARGB);
+                        Graphics g = bi.createGraphics();
+                        g.drawImage(image, 0, 0, width, height, null);
+
+                        double ratioX = (double) maxWidth / width;
+                        double ratioY = (double) maxHeight / height;
+                        double ratio = Math.min(ratioX, ratioY);
+
+                        double newWidth = width * ratio;
+                        double newHeight = height * ratio;
+
+                        //System.out.println("nw:"+Math.round(newWidth)+"nh:"+Math.round(newHeight)+"w:"+width+"h:"+height);
+                        currentImg = Scalr.resize(bi, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, Math.round((int)newWidth), Math.round((int)newHeight), Scalr.OP_ANTIALIAS);
+                    } catch (AWTException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.runTaskTimer(MCScreenshare.getPlugin(MCScreenshare.class), 0, Math.round(20f/renderFPS));
         }
-        return maxCoord;
+        return true;
     }
 }

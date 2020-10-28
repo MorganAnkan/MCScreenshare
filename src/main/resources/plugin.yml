@@ -1,26 +1,15 @@
 name: MCScreenshare
 version: ${project.version}
-main: mc.screenshare.Main
+main: mc.screenshare.MCScreenshare
 api-version: 1.13
-authors: [MorganAnkan, BlueBurgersTDD]
-description: share your screen in minecraft
+authors: [MorganAnkan, TheBlueBurger]
+description: Screenshare but it displays in minecraft.
+website: https://blueburgerstdd.github.io/mcscreenshare/
 commands:
   draw:
     usage: /draw
     description: Start the screenshare
-    permission: mcscreenshare.draw
+    permission: mcscreenshare.sceenshare.start
     aliases:
       - screenshare
       - start
-  type:
-    permission: mcscreenshare.type
-    description: Type a string remotely
-    usage: /type <text>
-  press:
-    permission: mcscreenshare.presskey
-    description: Presses a key remotely
-    usage: /press <key>
-    aliases:
-      - presskey
-      - keypress
-      - tapkey
