@@ -11,3 +11,6 @@ This is a plugin to allow other people to see your screen in Minecraft!
   
 ## Discord
 Join our discord server at http://discord.gg/mAstH6r
+
+## Note
+This plugin is made for Minecraft version 1.16. Any other versions may not work!
