@@ -1,6 +1,8 @@
 package mc.screenshare.commands;
 
+import imgscalr.Scalr;
 import mc.screenshare.MCScreenshare;
+import mc.screenshare.utils.TimerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,8 +19,6 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
-import org.bukkit.scheduler.BukkitRunnable;
-import imgscalr.Scalr;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -28,6 +28,8 @@ public class DrawCommand implements CommandExecutor, Listener {
     private static int maxWidth = 128;
     private static int maxHeight = 128;
     private static int renderFPS = 1;
+    private static TimerUtil timer = new TimerUtil();
+    public static boolean stop = false;
 
     static public class Renderer extends MapRenderer {
         @Override
@@ -56,7 +58,7 @@ public class DrawCommand implements CommandExecutor, Listener {
                     fps = Integer.parseInt(args[0]);
                 } catch(Exception ignored) {}
                 if(fps < 1) fps = 1;
-                if(fps > 20) fps = 20;
+                //if(fps > 20) fps = 20;
                 renderFPS = fps;
             }
             Player player = ((Player) sender);
@@ -81,8 +83,53 @@ public class DrawCommand implements CommandExecutor, Listener {
                     }
                 }
             });
+            stop = false;
+            loop();
+        }
+        return true;
+    }
 
-            new BukkitRunnable() {
+    public static boolean isStop() {
+        return stop;
+    }
+
+    public static void setStop(boolean stop) {
+        DrawCommand.stop = stop;
+    }
+
+    private static void loop() {
+       new Thread() {
+           @Override
+           public void run() {
+               timer.start(1000/renderFPS);
+               while(!stop) {
+                   if(timer.isDone()) {
+                       try {
+                           Robot robot = new Robot();
+                           int width = Toolkit.getDefaultToolkit().getScreenSize().width;
+                           int height = Toolkit.getDefaultToolkit().getScreenSize().height;
+
+                           Image image = robot.createScreenCapture(new Rectangle(0, 0, width, height));
+
+                           BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+                           Graphics g = bi.createGraphics();
+                           g.drawImage(image, 0, 0, width, height, null);
+
+                           double ratio = Math.min((double) maxWidth / width, (double) maxHeight / height);
+
+                           currentImg = Scalr.resize(bi, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, (int) Math.round(width * ratio), (int) Math.round(height * ratio), Scalr.OP_ANTIALIAS);
+                       } catch (AWTException e) {
+                           e.printStackTrace();
+                           this.interrupt();
+                       }
+                       timer.start(1000 / renderFPS);
+                   }
+               }
+           }
+       }.start();
+    }
+
+    /*new BukkitRunnable() {
                 @Override
                 public void run() {
                     try {
@@ -92,26 +139,17 @@ public class DrawCommand implements CommandExecutor, Listener {
 
                         Image image = robot.createScreenCapture(new Rectangle(0, 0, width, height));
 
-                        BufferedImage bi = new BufferedImage(width, height,
-                                BufferedImage.TYPE_INT_ARGB);
+                        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                         Graphics g = bi.createGraphics();
                         g.drawImage(image, 0, 0, width, height, null);
 
-                        double ratioX = (double) maxWidth / width;
-                        double ratioY = (double) maxHeight / height;
-                        double ratio = Math.min(ratioX, ratioY);
+                        double ratio = Math.min((double) maxWidth / width, (double) maxHeight / height);
 
-                        double newWidth = width * ratio;
-                        double newHeight = height * ratio;
-
-                        //System.out.println("nw:"+Math.round(newWidth)+"nh:"+Math.round(newHeight)+"w:"+width+"h:"+height);
-                        currentImg = Scalr.resize(bi, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, Math.round((int)newWidth), Math.round((int)newHeight), Scalr.OP_ANTIALIAS);
+                        currentImg = Scalr.resize(bi, Scalr.Method.AUTOMATIC, Scalr.Mode.AUTOMATIC, (int)Math.round(width * ratio), (int)Math.round(height * ratio), Scalr.OP_ANTIALIAS);
                     } catch (AWTException e) {
                         e.printStackTrace();
                     }
                 }
-            }.runTaskTimer(MCScreenshare.getPlugin(MCScreenshare.class), 0, Math.round(20f/renderFPS));
-        }
-        return true;
-    }
+            }.runTaskTimer(MCScreenshare.getPlugin(MCScreenshare.class), 0, Math.round(20f/renderFPS));*/
+
 }

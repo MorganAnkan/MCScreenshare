@@ -19,6 +19,14 @@ public final class MCScreenshare extends JavaPlugin {
         //saveDefaultConfig();
     }
 
+    @Override
+    public void onDisable() {
+        System.out.println("[MCScreenshare] going skadoosh");
+        if(!DrawCommand.isStop()) {
+            DrawCommand.setStop(true);
+        }
+    }
+
     /*public static Configuration getConfigFile() {
         return Bukkit.getPluginManager().getPlugin("MCScreenshare").getConfig();
     }*/
